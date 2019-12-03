@@ -15,3 +15,5 @@ Why not. At least I'll look into some new languages I've never used before.
 | Day | Language |
 |-----|----------|
 | 1   | bash     |
+| 2   | elm      |
+
