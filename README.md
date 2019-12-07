@@ -20,3 +20,7 @@ Why not. At least I'll look into some new languages I've never used before.
 | 4   | haskell  |
 | 5   | php      |
 | 6   | python   |
+| 7*  | perl     |
+
+
+*) problem 2 not yet finished

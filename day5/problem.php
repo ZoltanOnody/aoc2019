@@ -1,7 +1,7 @@
 <?php
 
-function interpret($bytecode) {
-	$memory = array_map('intval', explode(",", $bytecode));
+function interpret($reader) {
+	$memory = array_map('intval', explode(",", $reader()));
 	$pointer = 0;
 
 	while (true) {
@@ -25,7 +25,7 @@ function interpret($bytecode) {
 				$pointer += 4;
 				break;
 			case 3:
-				$memory[$index1] = intval(readline());
+				$memory[$index1] = intval($reader());
 				$pointer += 2;
 				break;
 			case 4:
@@ -55,4 +55,18 @@ function interpret($bytecode) {
 	}
 }
 
-interpret(readline());
+
+if (isset($_GET['stdin'])) {
+	// Execute via HTTP request.
+	$index = 0;
+	$input = explode(";", $_GET['stdin']);
+
+	$mockedSTDIN = function() use ($input, &$index) {
+		return $input[$index++];
+	};
+
+	interpret($mockedSTDIN);
+} else {
+	// Execute directly using `php problem.php`
+	interpret('readline');
+}
