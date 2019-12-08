@@ -21,6 +21,7 @@ Why not. At least I'll look into some new languages I've never used before.
 | 5   | php      |
 | 6   | python   |
 | 7*  | perl     |
+| 8   | raku     |
 
 
 *) problem 2 not yet finished
