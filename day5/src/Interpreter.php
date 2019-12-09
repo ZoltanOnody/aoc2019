@@ -1,8 +1,21 @@
 <?php
+declare(strict_types=1);
 
-function interpret($reader) {
+function getValue(&$memory, $index, $parameter, $relativeBase) {
+	switch ($parameter) {
+		case 0:
+			return $memory[$index];
+		case 1:
+			return $index;
+		case 2:
+			return $memory[$relativeBase + $index];
+	}
+}
+
+function interpret($reader, $writer) {
 	$memory = array_map('intval', explode(",", $reader()));
 	$pointer = 0;
+	$relativeBase = 0;
 
 	while (true) {
 		$operation = $memory[$pointer] % 100;
@@ -12,8 +25,8 @@ function interpret($reader) {
 		$index2 = $memory[$pointer+2];
 		$index3 = $memory[$pointer+3];
 
-		$val1 = ($parameter % 10 == 1) ? $index1: $memory[$index1];
-		$val2 = (($parameter / 10) % 10 == 1) ? $index2: $memory[$index2];
+		$val1 = getValue($memory, $index1, $parameter % 10, $relativeBase);
+		$val2 = getValue($memory, $index2, ($parameter/10) % 10, $relativeBase);
 
 		switch ($operation) {
 			case 1:
@@ -29,7 +42,7 @@ function interpret($reader) {
 				$pointer += 2;
 				break;
 			case 4:
-				echo $memory[$index1]."\n";
+				$writer($val1);
 				$pointer += 2;
 				break;
 			case 5:
@@ -46,6 +59,10 @@ function interpret($reader) {
 				$memory[$index3] = ($val1 == $val2)? 1 : 0;
 				$pointer += 4;
 				break;
+			case 9:
+				$relativeBase += $index1;
+				$pointer += 2;
+				break;
 			case 99:
 				return;
 			default:
@@ -55,18 +72,15 @@ function interpret($reader) {
 	}
 }
 
-
-if (isset($_GET['stdin'])) {
-	// Execute via HTTP request.
+function strToReader($str) {
 	$index = 0;
-	$input = explode(";", $_GET['stdin']);
+	$input = explode(";", $str);
 
-	$mockedSTDIN = function() use ($input, &$index) {
+	return function() use ($input, &$index) {
 		return $input[$index++];
 	};
+}
 
-	interpret($mockedSTDIN);
-} else {
-	// Execute directly using `php problem.php`
-	interpret('readline');
+function writer($str) {
+	echo $str."\n";
 }
